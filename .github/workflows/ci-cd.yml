@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [ main, master ]
 
-env:
-  DOCKER_REGISTRY: docker.io
-  FRONTEND_IMAGE: mdarifahammedreza/frontend
-  BACKEND_IMAGE: mdarifahammedreza/backend
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -38,8 +33,8 @@ jobs:
         context: ./frontend
         push: true
         tags: |
-          ${{ env.FRONTEND_IMAGE }}:latest
-          ${{ env.FRONTEND_IMAGE }}:${{ steps.vars.outputs.sha_short }}
+          samiarahmanliza/frontend:latest
+          samiarahmanliza/frontend:${{ steps.vars.outputs.sha_short }}
 
     - name: Build and push backend
       uses: docker/build-push-action@v4
@@ -47,13 +42,13 @@ jobs:
         context: ./backend
         push: true
         tags: |
-          ${{ env.BACKEND_IMAGE }}:latest
-          ${{ env.BACKEND_IMAGE }}:${{ steps.vars.outputs.sha_short }}
+          samiarahmanliza/backend:latest
+          samiarahmanliza/backend:${{ steps.vars.outputs.sha_short }}
 
     - name: Update Kubernetes manifests
       run: |
-        sed -i "s|image: ${{ env.FRONTEND_IMAGE }}:.*|image: ${{ env.FRONTEND_IMAGE }}:${{ steps.vars.outputs.sha_short }}|g" k8s/frontend.yaml
-        sed -i "s|image: ${{ env.BACKEND_IMAGE }}:.*|image: ${{ env.BACKEND_IMAGE }}:${{ steps.vars.outputs.sha_short }}|g" k8s/backend.yaml
+        sed -i "s|image: samiarahmanliza/frontend:.*|image: samiarahmanliza/frontend:${{ steps.vars.outputs.sha_short }}|g" k8s/frontend.yaml
+        sed -i "s|image: samiarahmanliza/backend:.*|image: samiarahmanliza/backend:${{ steps.vars.outputs.sha_short }}|g" k8s/backend.yaml
 
     - name: Commit and push changes
       run: |
